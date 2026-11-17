@@ -1,41 +1,13 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#02090b"><title>JARVIS</title><style>html,body{margin:0;height:100%;background:#02090b;color:#b8fff5;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}#load{position:fixed;inset:0;display:grid;place-items:center;color:#19e6d0;letter-spacing:.15em}#err{display:none;max-width:34em;padding:24px;line-height:1.5;color:#b8fff5}</style></head><body><div id="load">CHARGEMENT DE J.A.R.V.I.S…</div><div id="err"></div><script>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#02090b"><title>JARVIS</title><style>html,body{margin:0;min-height:100%;background:#02090b;color:#b8fff5;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}#status{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#19e6d0;letter-spacing:.1em}</style></head><body><div id="status">RESTAURATION DE J.A.R.V.I.S…</div><script>
 (async function(){
-'use strict';
-const original='https://raw.githubusercontent.com/dtwjjg7yyv-glitch/JARVIS.AI/578deaf23a8f8ace22729454c7cf70fb79830fe5/index.html';
-try{
- const response=await fetch(original,{cache:'no-store'});
- if(!response.ok)throw new Error('Impossible de charger le code d’origine ('+response.status+').');
- let html=await response.text();
- html=html.replace('</style>',`\n#homeback{position:absolute;right:12px;top:10px;width:44px;height:44px;padding:0;font-size:20px;letter-spacing:0;border-radius:12px;z-index:5}#chatnav{display:flex;gap:8px;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(25,230,208,.15)}#chatnav label{font-size:12px;color:var(--mut);white-space:nowrap}#chatlist{flex:1;min-width:0;font:inherit;font-size:14px;color:var(--pale);background:#041214;border:1px solid rgba(25,230,208,.28);border-radius:12px;padding:10px}#freshchat{flex:none;padding:10px 12px;white-space:nowrap}@media(max-width:420px){#chatnav{padding:7px;gap:5px}#freshchat{font-size:12px;padding:9px 8px}#chatlist{font-size:12px}}\n</style>`);
- html=html.replace('</header>','<button id="homeback" aria-label="Retour à l’accueil" title="Accueil">⌂</button></header>');
- html=html.replace('<section id="chat" hidden>','<section id="chat" hidden>\n <div id="chatnav"><label for="chatlist">Discussions</label><select id="chatlist" aria-label="Reprendre une ancienne discussion"></select><button id="freshchat" type="button">＋ Nouvelle</button></div>');
- const manager=`
-var CHAT_KEY='jv_conversations_v1',chatData=[],activeChatId=null,restoringChat=false;
-try{chatData=JSON.parse(localStorage.getItem(CHAT_KEY)||'[]');if(!Array.isArray(chatData))chatData=[];}catch(e){chatData=[];}
-function persistChats(){try{localStorage.setItem(CHAT_KEY,JSON.stringify(chatData.slice(0,40)));}catch(e){etat.textContent='Stockage plein : supprime quelques discussions ou photos.';}}
-function currentChat(){return chatData.find(function(x){return x.id===activeChatId;});}
-function formatLastVisit(ts){if(!ts)return 'pas encore ouverte';var mins=Math.max(0,Math.floor((Date.now()-ts)/60000));if(mins<1)return 'ouverte à l’instant';if(mins<60)return 'vue il y a '+mins+' min';var hrs=Math.floor(mins/60);if(hrs<24)return 'vue il y a '+hrs+' h';var days=Math.floor(hrs/24);if(days===1)return 'vue hier';if(days<7)return 'vue il y a '+days+' jours';return 'vue le '+new Date(ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});}
-function touchChat(x){if(x){x.lastOpened=Date.now();persistChats();}}
-function makeChat(){var x={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),title:'Nouvelle discussion',messages:[],history:[],lastOpened:Date.now()};chatData.unshift(x);activeChatId=x.id;hist=x.history;persistChats();return x;}
-function syncChatMenu(){var s=document.getElementById('chatlist');if(!s)return;s.innerHTML='';chatData.forEach(function(x){var o=document.createElement('option');o.value=x.id;o.textContent=x.title+' — '+formatLastVisit(x.lastOpened);o.selected=x.id===activeChatId;s.appendChild(o);});}
-function renderSavedChat(){var x=currentChat();if(!x)return;touchChat(x);hist=x.history||[];x.history=hist;restoringChat=true;msgs.innerHTML='';if(!x.messages.length){var p=document.createElement('p');p.id='vide';p.textContent='Dis quelque chose à JARVIS.';msgs.appendChild(p);}else{x.messages.forEach(function(m){var d=add(m.role==='user'?'u':'b',m.text||'');if(m.image){var im=document.createElement('img');im.src=m.image;im.className='pic';d.insertBefore(im,d.firstChild);}});}restoringChat=false;syncChatMenu();}
-function startFreshChat(){makeChat();msgs.innerHTML='<p id="vide">Dis quelque chose à JARVIS.</p>';syncChatMenu();openChat();}
-function setChatTitleFromAI(text){var x=currentChat();if(!x||!x.messages.length||x.messages.length>1)return text;var m=text.match(/\\[\\[TITLE:\\s*([^\\]]{1,60})\\]\\]/i);if(m){var title=m[1].trim().replace(/[\\r\\n]+/g,' ').slice(0,40);if(title){x.title=title;syncChatMenu();persistChats();}return text.replace(m[0],'').trim();}return text;}
-`;
- const sysOld="var SYS='Tu es JARVIS, l’assistant personnel de l’utilisateur, inspiré d’Iron Man. Réponds en français, de façon courte, claire et chaleureuse.',hist=[];";
- if(!html.includes(sysOld))throw new Error('La version source ne correspond pas au code d’origine attendu.');
- html=html.replace(sysOld,sysOld+"\n"+manager);
- html=html.replace("function add(c,t){var v=document.getElementById('vide');if(v)v.remove();var d=document.createElement('div');d.className='m '+c;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}","function add(c,t){var v=document.getElementById('vide');if(v)v.remove();var d=document.createElement('div');d.className='m '+c;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(!restoringChat){var x=currentChat();if(x){var role=c==='u'?'user':'model';x.messages.push({role:role,text:t});if(role==='user'&&x.title==='Nouvelle discussion'){x.title='Discussion en cours';syncChatMenu();}persistChats();}}return d;}");
- html=html.replace("function openChat(){chat.hidden=false;bot.style.transition='none';bot.style.opacity=0;toRest(60);void bot.offsetWidth;bot.style.transition='';bot.style.opacity=1;toRest();}","function openChat(){chat.hidden=false;if(currentChat())renderSavedChat();bot.style.transition='none';bot.style.opacity=0;toRest(60);void bot.offsetWidth;bot.style.transition='';bot.style.opacity=1;toRest();}");
- html=html.replace("if(i>=txt.length){clearInterval(iv);setTimeout(function(){cls('fly');", "if(i>=txt.length){var x=currentChat();if(x&&x.messages.length){x.messages[x.messages.length-1].text=txt;persistChats();}clearInterval(iv);setTimeout(function(){cls('fly');");
- html=html.replace("var a=d.candidates[0].content.parts.map(function(p){return p.text||'';}).join('');a=grabTodo(grabMem(a));", "var a=d.candidates[0].content.parts.map(function(p){return p.text||'';}).join('');a=setChatTitleFromAI(a);a=grabTodo(grabMem(a));");
- html=html.replace("hist.push({role:'model',parts:[{text:a}]});if(img)", "hist.push({role:'model',parts:[{text:a}]});var saved=currentChat();if(saved){saved.history=hist;persistChats();}if(img)");
- html=html.replace("if(img){var pi=document.createElement('img');pi.src=img;pi.className='pic';ub.insertBefore(pi,ub.firstChild);}","if(img){var pi=document.createElement('img');pi.src=img;pi.className='pic';ub.insertBefore(pi,ub.firstChild);var xc=currentChat();if(xc&&xc.messages.length){xc.messages[xc.messages.length-1].image=img;persistChats();}}\n var active=currentChat();if(active){active.history=hist;persistChats();}");
- html=html.replace("document.getElementById('newc').addEventListener('click',function(){hist=[];msgs.innerHTML='<p id=\"vide\">Dis quelque chose à JARVIS.</p>';sst.textContent='Nouvelle discussion prête.';});", "document.getElementById('newc').addEventListener('click',function(){startFreshChat();sst.textContent='Nouvelle discussion prête.';});\ndocument.getElementById('freshchat').addEventListener('click',startFreshChat);document.getElementById('chatlist').addEventListener('change',function(){activeChatId=this.value;renderSavedChat();});document.getElementById('homeback').addEventListener('click',function(){show('accueil');});");
- html=html.replace(sysOld, "var SYS='Tu es JARVIS, l’assistant personnel de l’utilisateur, inspiré d’Iron Man. Réponds en français, de façon courte, claire et chaleureuse. Lors de ta première réponse dans une discussion, ajoute à la toute fin une ligne [[TITLE: titre très court qui résume le sujet, par exemple Vélo ou Achat voiture]]. Ne répète pas cette ligne dans les réponses suivantes.',hist=[];");
- if(!html.includes('function renderSavedChat()')||!html.includes('function formatLastVisit')||!html.includes('id=\"freshchat\"')||!html.includes('id=\"homeback\"'))throw new Error('Échec de préparation des contrôles de discussion.');
- document.open();document.write(html);document.close();
-}catch(e){document.getElementById('load').style.display='none';const box=document.getElementById('err');box.style.display='block';box.textContent='JARVIS n’a pas pu démarrer : '+e.message+' Ouvre le dépôt GitHub pour réessayer.';}
+ 'use strict';
+ try{
+  var response=await fetch('https://raw.githubusercontent.com/dtwjjg7yyv-glitch/JARVIS.AI/1ab51b615896e58a15fb5703d0a051cbd6aa1c2d/index.html',{cache:'no-store'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  var previous=await response.text();
+  if(!previous.includes('function renderSavedChat()')||!previous.includes('id="homeback"'))throw new Error('La version précédente est incomplète.');
+  document.open();document.write(previous);document.close();
+ }catch(e){var s=document.getElementById('status');s.style.letterSpacing='0';s.textContent='Impossible de restaurer JARVIS. Vérifie ta connexion puis actualise la page.';}
 })();
 </script></body></html>
