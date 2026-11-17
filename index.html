@@ -1,16 +1,41 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#02090b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="LORIC"><link rel="apple-touch-icon" sizes="180x180" href="icon.svg?v=3"><link rel="icon" type="image/svg+xml" href="icon.svg?v=3"><title>LORIC</title><style>html,body{margin:0;min-height:100%;background:#02090b;color:#b8fff5;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}#status{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#19e6d0;letter-spacing:.1em}</style></head><body><div id="status">CHARGEMENT DE LORIC…</div><script>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02090b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LORIC">
+<link rel="apple-touch-icon" sizes="180x180" href="icon.svg?v=4">
+<link rel="icon" type="image/svg+xml" href="icon.svg?v=4">
+<title>LORIC</title>
+<style>
+html,body{margin:0;min-height:100%;background:#02090b;color:#b8fff5;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#status{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:#19e6d0;letter-spacing:.12em}
+#status.error{letter-spacing:0;line-height:1.5;color:#b8fff5}
+</style>
+</head>
+<body>
+<div id="status">CHARGEMENT DE LORIC…</div>
+<script>
 (async function(){
  'use strict';
+ var status=document.getElementById('status');
  try{
-  var response=await fetch('https://raw.githubusercontent.com/dtwjjg7yyv-glitch/JARVIS.AI/1ab51b615896e58a15fb5703d0a051cbd6aa1c2d/index.html',{cache:'no-store'});
-  if(!response.ok)throw new Error('HTTP '+response.status);
+  var response=await fetch('https://raw.githubusercontent.com/dtwjjg7yyv-glitch/JARVIS.AI/578deaf23a8f8ace22729454c7cf70fb79830fe5/index.html',{cache:'no-store'});
+  if(!response.ok)throw new Error('Le fichier de l’application est inaccessible ('+response.status+').');
   var page=await response.text();
-  var marker='let html=await response.text();';
-  if(!page.includes(marker))throw new Error('La page source a changé de format.');
-  var iconLinks='<link rel="apple-touch-icon" sizes="180x180" href="icon.svg?v=3"><link rel="icon" type="image/svg+xml" href="icon.svg?v=3"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="LORIC">';
-  page=page.replace(marker,marker+"\n html=html.replace('</head>',\""+iconLinks+"</head>\");\n html=html.split('J.A.R.V.I.S').join('LORIC').split('JARVIS').join('LORIC').split('Jarvis').join('LORIC').split('Jarvis').join('LORIC');");
-  document.open();document.write(page);document.close();
- }catch(error){var status=document.getElementById('status');status.style.letterSpacing='0';status.textContent='Impossible de charger LORIC. Vérifie ta connexion puis actualise la page.';}
+  if(!page.toLowerCase().includes('<!doctype html'))throw new Error('Le fichier de l’application est invalide.');
+  page=page.replace('</head>','<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="LORIC"><link rel="apple-touch-icon" sizes="180x180" href="https://dtwjjg7yyv-glitch.github.io/JARVIS.AI/icon.svg?v=4"><link rel="icon" type="image/svg+xml" href="https://dtwjjg7yyv-glitch.github.io/JARVIS.AI/icon.svg?v=4"><title>LORIC</title></head>');
+  page=page.split('J.A.R.V.I.S').join('LORIC').split('JARVIS').join('LORIC').split('Jarvis').join('LORIC');
+  document.open();
+  document.write(page);
+  document.close();
+ }catch(error){
+  status.className='error';
+  status.textContent='LORIC ne peut pas se charger. Vérifie ta connexion et actualise la page. ('+error.message+')';
+ }
 })();
-</script></body></html>
+</script>
+</body>
+</html>
